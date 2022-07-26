@@ -2,6 +2,8 @@ import express, {Express, Request, Response } from 'express';
 const app: Express = express();
 const port = process.env.PORT || 3000; // should I install dotenv and set this in .env?
 
+app.use(express.json());
+
 const users = [
   {id: 1, name: 'user1'},
   {id: 2, name: 'user2'},
@@ -21,9 +23,17 @@ app.get('/api/users/:id', (req, res) => {
 })
 
 app.post('/api/users', (req, res) => {
-  const user = {
-    id: users.length + 1
+  if (!req.body.name) {
+    res.status(400).send('Name is required')
+    return;
   }
+  
+  const user = {
+    id: users.length + 1,
+    name: req.body.name
+  }
+  users.push(user);
+  res.send(user);
 })
 
 // app.put()

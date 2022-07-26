@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000; // should I install dotenv and set this in .env?
+app.use(express_1.default.json());
 const users = [
     { id: 1, name: 'user1' },
     { id: 2, name: 'user2' },
@@ -21,7 +22,14 @@ app.get('/api/users/:id', (req, res) => {
     }
     res.send(user);
 });
-// app.post()
+app.post('/api/users', (req, res) => {
+    const user = {
+        id: users.length + 1,
+        name: req.body.name
+    };
+    users.push(user);
+    res.send(user);
+});
 // app.put()
 // app.delete()
 app.listen(port, () => console.log(`Server started at http://localhost:${port}`));
