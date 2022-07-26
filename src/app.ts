@@ -20,7 +20,11 @@ app.get('/api/users/:id', (req, res) => {
   res.send(user);
 })
 
-// app.post()
+app.post('/api/users', (req, res) => {
+  const user = {
+    id: users.length + 1
+  }
+})
 
 // app.put()
 
