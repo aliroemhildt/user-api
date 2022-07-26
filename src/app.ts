@@ -17,15 +17,15 @@ app.get('/api/users', (req: Request, res: Response) => {
 app.get('/api/users/:id', (req, res) => {
   const user = users.find(user => user.id === parseInt(req.params.id));
   if (!user) {
-    res.status(404).send(`No user found with id ${req.params.id}`)
+    return res.status(404).send(`No user found with id ${req.params.id}`);
   }
+
   res.send(user);
 })
 
 app.post('/api/users', (req, res) => {
   if (!req.body.name) {
-    res.status(400).send('Name is required')
-    return;
+    return res.status(400).send('Name is required');
   }
 
   const user = {
@@ -39,19 +39,19 @@ app.post('/api/users', (req, res) => {
 app.put('/api/users/:id', (req, res) => {
   // look up user
   // if it doesn't exist, 404
-  const user = users.find(user => user.id === parseInt(req.params.id));
-  if (!user) {
-    res.status(404).send(`No user found with id ${req.params.id}`)
-  }
-  
   // validate:
   // if invalid, 400
-  if (!req.body.name) {
-    res.status(400).send('Name is required')
-    return;
+  // if valid, update user and return to client 
+
+  const user = users.find(user => user.id === parseInt(req.params.id));
+  if (!user) {
+    return res.status(404).send(`No user found with id ${req.params.id}`);
   }
 
-  // if valid, update user and return to client 
+  if (!req.body.name) {
+    return res.status(400).send('Name is required');
+  }
+
   // might be able to remove this if statement once there is an interface
   if (user) {
     user.name = req.body.name;
@@ -59,6 +59,20 @@ app.put('/api/users/:id', (req, res) => {
   }
 })
 
-// app.delete()
+app.delete('/api/users/:id', (req, res) => {
+  // find user
+  // if not found, 404
+  // if found, delete + return user
+  const user = users.find(user => user.id === parseInt(req.params.id));
+  if (!user) {
+    return res.status(404).send(`No user found with id ${req.params.id}`);
+  }
 
-app.listen(port, () => console.log(`Server started at http://localhost:${port}`))
+  if (user) {
+    const index = users.indexOf(user);
+  users.splice(index, 1);
+  res.send(user);
+  } 
+})
+
+app.listen(port, () => console.log(`Server started at http://localhost:${port}`));
