@@ -27,7 +27,7 @@ app.post('/api/users', (req, res) => {
     res.status(400).send('Name is required')
     return;
   }
-  
+
   const user = {
     id: users.length + 1,
     name: req.body.name
@@ -36,7 +36,28 @@ app.post('/api/users', (req, res) => {
   res.send(user);
 })
 
-// app.put()
+app.put('/api/users/:id', (req, res) => {
+  // look up user
+  // if it doesn't exist, 404
+  const user = users.find(user => user.id === parseInt(req.params.id));
+  if (!user) {
+    res.status(404).send(`No user found with id ${req.params.id}`)
+  }
+  
+  // validate:
+  // if invalid, 400
+  if (!req.body.name) {
+    res.status(400).send('Name is required')
+    return;
+  }
+
+  // if valid, update user and return to client 
+  // might be able to remove this if statement once there is an interface
+  if (user) {
+    user.name = req.body.name;
+    res.send(user);
+  }
+})
 
 // app.delete()
 
