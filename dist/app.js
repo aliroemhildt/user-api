@@ -18,14 +18,13 @@ app.get('/api/users', (req, res) => {
 app.get('/api/users/:id', (req, res) => {
     const user = users.find(user => user.id === parseInt(req.params.id));
     if (!user) {
-        res.status(404).send(`No user found with id ${req.params.id}`);
+        return res.status(404).send(`No user found with id ${req.params.id}`);
     }
     res.send(user);
 });
 app.post('/api/users', (req, res) => {
     if (!req.body.name) {
-        res.status(400).send('Name is required');
-        return;
+        return res.status(400).send('Name is required');
     }
     const user = {
         id: users.length + 1,
@@ -35,18 +34,12 @@ app.post('/api/users', (req, res) => {
     res.send(user);
 });
 app.put('/api/users/:id', (req, res) => {
-    // look up user
-    // if it doesn't exist, 404
-    // validate:
-    // if invalid, 400
-    // if valid, update user and return to client 
     const user = users.find(user => user.id === parseInt(req.params.id));
     if (!user) {
-        res.status(404).send(`No user found with id ${req.params.id}`);
+        return res.status(404).send(`No user found with id ${req.params.id}`);
     }
     if (!req.body.name) {
-        res.status(400).send('Name is required');
-        return;
+        return res.status(400).send('Name is required');
     }
     // might be able to remove this if statement once there is an interface
     if (user) {
@@ -55,12 +48,9 @@ app.put('/api/users/:id', (req, res) => {
     }
 });
 app.delete('/api/users/:id', (req, res) => {
-    // find user
-    // if not found, 404
-    // if found, delete + return user
     const user = users.find(user => user.id === parseInt(req.params.id));
     if (!user) {
-        res.status(404).send(`No user found with id ${req.params.id}`);
+        return res.status(404).send(`No user found with id ${req.params.id}`);
     }
     if (user) {
         const index = users.indexOf(user);
