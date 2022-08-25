@@ -1,7 +1,9 @@
 import express, {Express, Request, Response } from 'express';
+import User from './interfaces/user.interface';
 const app: Express = express();
 const port = process.env.PORT || 3000; // should I install dotenv and set this in .env?
-import User from './interfaces/user.interface';
+// const crypto = require('crypto');
+import crypto from 'crypto';
 
 app.use(express.json());
 
@@ -14,7 +16,7 @@ app.get('/api/users', (req: Request, res: Response) => {
 
 // get single user
 app.get('/api/users/:id', (req, res) => {
-  const user = users.find(user => user.id === parseInt(req.params.id));
+  const user = users.find(user => user.id === req.params.id);
   if (!user) {
     return res.status(404).send(`No user found with id ${req.params.id}`);
   }
@@ -31,7 +33,7 @@ app.post('/api/users', (req, res) => {
   const date = new Date();
 
   const user = {
-    id: users.length + 1,
+    id: crypto.randomUUID(),
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     username: req.body.username,
@@ -46,7 +48,7 @@ app.post('/api/users', (req, res) => {
 // update existing user
 // WIP - should be able to update firstName, lastName, username, password
 app.put('/api/users/:id', (req, res) => {
-  const user = users.find(user => user.id === parseInt(req.params.id));
+  const user = users.find(user => user.id === req.params.id);
   if (!user) {
     return res.status(404).send(`No user found with id ${req.params.id}`);
   }
@@ -64,7 +66,7 @@ app.put('/api/users/:id', (req, res) => {
 
 // delete user
 app.delete('/api/users/:id', (req, res) => {
-  const user = users.find(user => user.id === parseInt(req.params.id));
+  const user = users.find(user => user.id === req.params.id);
   if (!user) {
     return res.status(404).send(`No user found with id ${req.params.id}`);
   }
