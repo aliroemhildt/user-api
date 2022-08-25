@@ -46,14 +46,23 @@ app.put('/api/users/:id', (req, res) => {
     if (!user) {
         return res.status(404).send(`No user found with id ${req.params.id}`);
     }
-    //update username
-    if (!req.body.name) {
-        return res.status(400).send('username is required');
+    // update firstName
+    if (req.body.firstName) {
+        user.firstName = req.body.firstName;
     }
-    if (user) {
+    // update lastName
+    if (req.body.lastName) {
+        user.lastName = req.body.firstName;
+    }
+    // update username
+    if (req.body.username) {
         user.username = req.body.username;
-        res.send(user);
     }
+    if (req.body.password) {
+        user.password = req.body.password;
+    }
+    // check that this is actually updating the user 
+    res.send(user);
 });
 // delete user
 app.delete('/api/users/:id', (req, res) => {

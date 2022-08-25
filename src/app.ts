@@ -46,22 +46,9 @@ app.post('/api/users', (req, res) => {
 })
 
 // update existing user
-// WIP - should be able to update firstName, lastName, username, password
+// not sure how to do a put...
 app.put('/api/users/:id', (req, res) => {
-  const user = users.find(user => user.id === req.params.id);
-  if (!user) {
-    return res.status(404).send(`No user found with id ${req.params.id}`);
-  }
 
-  //update username
-  if (!req.body.name) {
-    return res.status(400).send('username is required');
-  }
-
-  if (user) {
-    user.username = req.body.username;
-    res.send(user);
-  }
 })
 
 // delete user
