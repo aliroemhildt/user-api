@@ -1,20 +1,19 @@
 import express, {Express, Request, Response } from 'express';
 import User from './interfaces/user.interface';
 const app: Express = express();
-const port = process.env.PORT || 3000; // should I install dotenv and set this in .env?
-// const crypto = require('crypto');
+const port = process.env.PORT || 3000;
 import crypto from 'crypto';
 
 app.use(express.json());
 
 const users: User[] = [];
 
-// get all users
+// GET all users
 app.get('/api/users', (req: Request, res: Response) => {
   res.send(users);
 })
 
-// get single user
+// GET single user
 app.get('/api/users/:id', (req, res) => {
   const user = users.find(user => user.id === req.params.id);
   if (!user) {
@@ -24,7 +23,7 @@ app.get('/api/users/:id', (req, res) => {
   res.send(user);
 })
 
-// post new user
+// POST new user
 app.post('/api/users', (req, res) => {
   if (!req.body.firstName || !req.body.lastName || !req.body.username || !req.body.password) {
     return res.status(400).send('Missing a field');
@@ -45,13 +44,34 @@ app.post('/api/users', (req, res) => {
   res.send(user);
 })
 
-// update existing user
-// not sure how to do a put...
+// UPDATE existing user
+// should I put this all in one operation or have separate PUTs for each field that can be updated? 
 app.put('/api/users/:id', (req, res) => {
+  // look up user
+  let user = users.find(user => user.id === req.params.id);
 
+  // if it doesn't exist, return 404
+  if (!user) {
+    res.status(404).send(`No user found with ID ${req.params.id}`);
+  } 
+
+  // validate
+  if (user && req.body.firstName && req.body.lastName && req.body.username && req.body.password) {
+    // update user
+    user.firstName = req.body.firstName
+    user.lastName = req.body.lastName
+    user.username = req.body.username
+    user.password = req.body.password
+  } else {
+      // if invalid, return 400
+    res.status(400).send('Missing a required field');
+  }
+
+  // return updated user
+  res.send(user);
 })
 
-// delete user
+// DELETE user
 app.delete('/api/users/:id', (req, res) => {
   const user = users.find(user => user.id === req.params.id);
   if (!user) {
