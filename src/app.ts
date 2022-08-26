@@ -6,7 +6,8 @@ import crypto from 'crypto';
 
 app.use(express.json());
 
-const users: User[] = [];
+const users: User[] = []
+// const events: 
 
 // GET all users
 app.get('/api/users', (req: Request, res: Response) => {
@@ -14,7 +15,7 @@ app.get('/api/users', (req: Request, res: Response) => {
 })
 
 // GET single user
-app.get('/api/users/:id', (req, res) => {
+app.get('/api/users/:id', (req: Request, res: Response) => {
   const user = users.find(user => user.id === req.params.id);
   if (!user) {
     return res.status(404).send(`No user found with id ${req.params.id}`);
@@ -24,14 +25,14 @@ app.get('/api/users/:id', (req, res) => {
 })
 
 // POST new user
-app.post('/api/users', (req, res) => {
+app.post('/api/users', (req: Request, res: Response) => {
   if (!req.body.firstName || !req.body.lastName || !req.body.username || !req.body.password) {
     return res.status(400).send('Missing a field');
   }
 
   const date = new Date();
 
-  const user = {
+  const user: User = {
     id: crypto.randomUUID(),
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -56,6 +57,9 @@ app.put('/api/users/:id', (req, res) => {
   } 
 
   // validate
+  // get keys of req.body
+  // forEach over them to validate
+  // could make an array of fields 
   if (user && req.body.firstName && req.body.lastName && req.body.username && req.body.password) {
     // update user
     user.firstName = req.body.firstName
