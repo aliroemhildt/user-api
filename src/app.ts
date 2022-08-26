@@ -1,41 +1,21 @@
 import express, {Express, Request, Response } from 'express';
+import User from './interfaces/user.interface';
 const app: Express = express();
-const port = process.env.PORT || 3000; // should I install dotenv and set this in .env?
+const port = process.env.PORT || 3000;
+import crypto from 'crypto';
 
 app.use(express.json());
 
-// const users = [
-//   {
-//     id: 1,
-//     name: 'user1',
-//   },
-//   {
-//     id: 2,
-//     name: 'user2'
-//   },
-//   {
-//     id: 3,
-//     name: 'user3'
-//   }
-// ];
-
-interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  username: string;
-  password: string;
-  dateCreated: Date;
-}
-
 const users: User[] = [];
 
+// GET all users
 app.get('/api/users', (req: Request, res: Response) => {
   res.send(users);
 })
 
+// GET single user
 app.get('/api/users/:id', (req, res) => {
-  const user = users.find(user => user.id === parseInt(req.params.id));
+  const user = users.find(user => user.id === req.params.id);
   if (!user) {
     return res.status(404).send(`No user found with id ${req.params.id}`);
   }
@@ -43,42 +23,57 @@ app.get('/api/users/:id', (req, res) => {
   res.send(user);
 })
 
+// POST new user
 app.post('/api/users', (req, res) => {
-  if (!req.body.name) {
-    return res.status(400).send('Name is required');
+  if (!req.body.firstName || !req.body.lastName || !req.body.username || !req.body.password) {
+    return res.status(400).send('Missing a field');
   }
 
+  const date = new Date();
+
   const user = {
-    id: users.length + 1,
+    id: crypto.randomUUID(),
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     username: req.body.username,
     password: req.body.password,
-    dateCreated: req.body.dateCreated
+    dateCreated: date
   }
+
   users.push(user);
   res.send(user);
 })
 
+// UPDATE existing user
+// should I put this all in one operation or have separate PUTs for each field that can be updated? 
 app.put('/api/users/:id', (req, res) => {
-  const user = users.find(user => user.id === parseInt(req.params.id));
+  // look up user
+  let user = users.find(user => user.id === req.params.id);
+
+  // if it doesn't exist, return 404
   if (!user) {
-    return res.status(404).send(`No user found with id ${req.params.id}`);
+    res.status(404).send(`No user found with ID ${req.params.id}`);
+  } 
+
+  // validate
+  if (user && req.body.firstName && req.body.lastName && req.body.username && req.body.password) {
+    // update user
+    user.firstName = req.body.firstName
+    user.lastName = req.body.lastName
+    user.username = req.body.username
+    user.password = req.body.password
+  } else {
+      // if invalid, return 400
+    res.status(400).send('Missing a required field');
   }
 
-  if (!req.body.name) {
-    return res.status(400).send('username is required');
-  }
-
-  // might be able to remove this if statement once there is an interface
-  if (user) {
-    user.username = req.body.username;
-    res.send(user);
-  }
+  // return updated user
+  res.send(user);
 })
 
+// DELETE user
 app.delete('/api/users/:id', (req, res) => {
-  const user = users.find(user => user.id === parseInt(req.params.id));
+  const user = users.find(user => user.id === req.params.id);
   if (!user) {
     return res.status(404).send(`No user found with id ${req.params.id}`);
   }
