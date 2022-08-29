@@ -8,8 +8,8 @@ interface CalendarEvent {
 }
 
 interface EventDate {
-  start: {
-    date: Date
-    time: Date
-  }
+  date: Date
+  time: Date //not sure if this will be a date or not
 }
+
+export default CalendarEvent;
