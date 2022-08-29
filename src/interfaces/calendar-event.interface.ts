@@ -1,15 +1,13 @@
-interface CalendarEvent {
-  eventId: string
-  userId:string
-  start:EventDate
-  end: EventDate
-  name: string
-  description: string
-}
-
-interface EventDate {
+export default interface EventDate {
   date: Date
   time: Date //not sure if this will be a date or not
 }
 
-export default CalendarEvent;
+export default interface CalendarEvent {
+  eventId: string
+  userId:string
+  start: EventDate
+  end: EventDate
+  name: string
+  description: string
+}
