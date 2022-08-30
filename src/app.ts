@@ -2,12 +2,10 @@ import express, {Express, Request, Response } from 'express';
 import User from './interfaces/user.interface';
 import CalendarEvent from './interfaces/calendar-event.interface';
 import crypto from 'crypto';
-import { read } from 'fs';
-import { request } from 'http';
+
 const app: Express = express();
 const port = process.env.PORT || 3000; //how can I type this as a number? 
 
-console.log(process.env.PORT)
 app.use(express.json());
 
 const users: User[] = []
@@ -52,27 +50,38 @@ app.post('/api/users', (req: Request, res: Response) => {
 })
 
 // UPDATE existing user
-app.put('/api/users/:id', (req: Request, res: Response) => {
-  // how do I type this? 
-  let user = users.find(user => user.id === req.params.id);
-
-  if (!user) {
-    res.status(404).send(`No user found with ID ${req.params.id}`);
-  } 
-
+// need to test this on postman
   // can clean up this fn by: 
   // validate
   // get keys of req.body
   // forEach over them to validate
-  // could make an array of fields
+  // could make an array of fields  
+app.put('/api/users/:id', (req: Request, res: Response) => {
+  let user = users.find(user => user.id === req.params.id); //how do I type this? 
 
-  if (user && req.body.firstName && req.body.lastName && req.body.username && req.body.password) {
-    // how do I type these?
-    user.firstName = req.body.firstName
-    user.lastName = req.body.lastName
-    user.username = req.body.username
-    user.password = req.body.password
-  } else {
+  if (!user) {
+    res.status(404).send(`No user found with ID ${req.params.id}`);
+  }
+
+  if (user && req.body.firstName) {
+    user.firstName = req.body.firstName;
+  }
+
+  if (user && req.body.lastName) {
+    user.firstName = req.body.lastName;
+  }
+
+  if (user && req.body.username) {
+    user.username = req.body.username;
+  }
+
+  if (user && req.body.password) {
+    user.password = req.body.password;
+  }
+
+  const includesField = Object.keys(req.body).includes('firstName' || 'lastName' || 'username' || 'password');
+
+  if (user && !includesField) {
     res.status(400).send('Missing a required field');
   }
 
@@ -152,6 +161,7 @@ app.delete('/api/events/:id', (req: Request, res: Response) => {
 })
 
 // UPDATE event
+// need to test this on postman
 app.put(`api/events/:id`, (req: Request, res: Response) => {
   let event = events.find(event => event.eventId === req.params.id);
 
@@ -159,7 +169,29 @@ app.put(`api/events/:id`, (req: Request, res: Response) => {
     res.status(404).send(`No event found with ID ${req.params.id}`);
   }
 
-  // clean up user put fn and then do the same thing here
-})
+  if (event && req.body.start) {
+    event.start = req.body.firstName;
+  }
+
+  if (event && req.body.end) {
+    event.end = req.body.lastName;
+  }
+
+  if (event && req.body.name) {
+    event.name = req.body.username;
+  }
+
+  if (event && req.body.description) {
+    event.description = req.body.password;
+  }
+
+  const includesField = Object.keys(req.body).includes('start' || 'end' || 'name' || 'description');
+
+  if (event && !includesField) {
+    res.status(400).send('Missing a required field');
+  }
+
+  res.status(200).send(event);
+});
 
 app.listen(port, () => console.log(`Server started at http://localhost:${port}`));
