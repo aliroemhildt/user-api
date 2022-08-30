@@ -11,7 +11,7 @@ console.log(process.env.PORT)
 app.use(express.json());
 
 const users: User[] = []
-const calendarEvents: CalendarEvent[] = [];
+const events: CalendarEvent[] = [];
 
 // how to type the return values of each fn? 
 
@@ -82,6 +82,7 @@ app.put('/api/users/:id', (req: Request, res: Response) => {
 // DELETE user
 app.delete('/api/users/:id', (req: Request, res: Response) => {
   const user = users.find(user => user.id === req.params.id);
+ 
   if (!user) {
     res.status(404).send(`No user found with id ${req.params['id']}`);
   } else {
@@ -93,11 +94,13 @@ app.delete('/api/users/:id', (req: Request, res: Response) => {
 
 // GET all calendar events for a single user
 app.get('/api/events/:id', (req: Request, res: Response) => {
-  const events = calendarEvents.map(event => {
-    if (event.userId === req.params.id) return event
+  const userEvents = events.map(event => {
+    if (event.userId === req.params.id) {
+      return event;
+    }
   });
 
-  res.status(200).send(events);
+  res.status(200).send(userEvents);
 })
 
 // POST new calendar event
@@ -110,20 +113,37 @@ app.post('/api/events', (req: Request, res: Response) => {
     eventId: crypto.randomUUID(),
     userId: req.body.userId,
     start: req.body.start,
-    end: req.body.end, //need to fix this
-    name: req.body.name, //need to fix this
+    end: req.body.end,
+    name: req.body.name,
     description: req.body.description
   }
 
-  calendarEvents.push(newEvent);
-  res.status(201).send(calendarEvents);
+  events.push(newEvent);
+  res.status(201).send(events);
 })
 
 // DELETE calendar event
 app.delete('/api/events/:id', (req: Request, res: Response) => {
-  const event = calendarEvents.find(event => event.eventId === req.params.id);
+  const event = events.find(event => event.eventId === req.params.id);
+
+  if (!event) {
+    res.status(404).send(`No calendar event found with id ${req.params.id}`);
+  } else {
+    const index = events.indexOf(event);
+    events.splice(index, 1);
+    res.status(200).send(event);
+  }
 })
 
 // UPDATE event
+app.put(`api/events/:id`, (req: Request, res: Response) => {
+  let event = events.find(event => event.eventId === req.params.id);
+
+  if (!event) {
+    res.status(404).send(`No event found with ID ${req.params.id}`);
+  }
+
+  // clean up user put fn and then do the same thing here
+})
 
 app.listen(port, () => console.log(`Server started at http://localhost:${port}`));
