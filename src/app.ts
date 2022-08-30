@@ -92,9 +92,25 @@ app.delete('/api/users/:id', (req: Request, res: Response) => {
   } 
 })
 
-// GET all calendar events for a single user
+// GET all calendar events
+app.get('/api/events', (req: Request, res: Response) => {
+  res.status(200).send(events);
+});
+
+// GET single calendar event
 app.get('/api/events/:id', (req: Request, res: Response) => {
-  const userEvents = events.map(event => {
+  const event = events.find(event => event.eventId === req.params.id);
+  
+  if (!event) {
+    res.status(404).send(`No event found with ID ${req.params.id}`);
+  } else {
+    res.status(200).send(event);
+  }
+})
+
+// GET all calendar events for a single user
+app.get('/api/events/user/:id', (req: Request, res: Response) => {
+  const userEvents = events.filter(event => {
     if (event.userId === req.params.id) {
       return event;
     }
@@ -119,7 +135,7 @@ app.post('/api/events', (req: Request, res: Response) => {
   }
 
   events.push(newEvent);
-  res.status(201).send(events);
+  res.status(201).send(newEvent);
 })
 
 // DELETE calendar event
