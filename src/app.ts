@@ -1,11 +1,11 @@
 import express, {Express, Request, Response } from 'express';
 import User from './interfaces/user.interface';
 import CalendarEvent from './interfaces/calendar-event.interface';
-import EventDate from './interfaces/calendar-event.interface';
-const app: Express = express();
-const port = process.env.PORT || 3000; //how can I type this as a number? 
 import crypto from 'crypto';
 import { read } from 'fs';
+import { request } from 'http';
+const app: Express = express();
+const port = process.env.PORT || 3000; //how can I type this as a number? 
 
 console.log(process.env.PORT)
 app.use(express.json());
@@ -18,23 +18,24 @@ const calendarEvents: CalendarEvent[] = [];
 // GET all users
 // should I remove req if I'm not using it?
 app.get('/api/users', (req: Request, res: Response) => {
-  return res.send(users);
+  res.status(200).send(users);
 })
 
 // GET single user
 app.get('/api/users/:id', (req: Request, res: Response) => {
   const user = users.find(user => user.id === req.params.id);
+  
   if (!user) {
-    return res.status(404).send(`No user found with id ${req.params.id}`);
+    res.status(404).send(`No user found with id ${req.params.id}`);
   }
 
-  return res.send(user);
+  res.status(200).send(user);
 })
 
 // POST new user
 app.post('/api/users', (req: Request, res: Response) => {
   if (!req.body.firstName || !req.body.lastName || !req.body.username || !req.body.password) {
-    return res.status(400).send('Missing a field');
+    res.status(400).send('Missing a field');
   }
 
   const user: User = {
@@ -47,7 +48,7 @@ app.post('/api/users', (req: Request, res: Response) => {
   }
 
   users.push(user);
-  return res.send(user);
+  res.status(201).send(user);
 })
 
 // UPDATE existing user
@@ -56,7 +57,7 @@ app.put('/api/users/:id', (req: Request, res: Response) => {
   let user = users.find(user => user.id === req.params.id);
 
   if (!user) {
-    return res.status(404).send(`No user found with ID ${req.params.id}`);
+    res.status(404).send(`No user found with ID ${req.params.id}`);
   } 
 
   // can clean up this fn by: 
@@ -72,21 +73,21 @@ app.put('/api/users/:id', (req: Request, res: Response) => {
     user.username = req.body.username
     user.password = req.body.password
   } else {
-    return res.status(400).send('Missing a required field');
+    res.status(400).send('Missing a required field');
   }
 
-  return res.send(user);
+  res.status(200).send(user);
 })
 
 // DELETE user
 app.delete('/api/users/:id', (req: Request, res: Response) => {
   const user = users.find(user => user.id === req.params.id);
   if (!user) {
-    return res.status(404).send(`No user found with id ${req.params['id']}`);
+    res.status(404).send(`No user found with id ${req.params['id']}`);
   } else {
     const index = users.indexOf(user);
     users.splice(index, 1);
-    return res.send(user);
+    res.status(200).send(user);
   } 
 })
 
@@ -96,13 +97,13 @@ app.get('/api/events/:id', (req: Request, res: Response) => {
     if (event.userId === req.params.id) return event
   });
 
-  return res.send(events);
+  res.status(200).send(events);
 })
 
 // POST new calendar event
 app.post('/api/events', (req: Request, res: Response) => {
   if (!req.body.userId || !req.body.start || !req.body.end || !req.body.name || !req.body.description) {
-    return res.status(400).send('Missing a required field');
+    res.status(400).send('Missing a required field');
   }
 
   const newEvent: CalendarEvent = {
@@ -115,10 +116,13 @@ app.post('/api/events', (req: Request, res: Response) => {
   }
 
   calendarEvents.push(newEvent);
-  return res.send(calendarEvents);
+  res.status(201).send(calendarEvents);
 })
 
 // DELETE calendar event
+app.delete('/api/events/:id', (req: Request, res: Response) => {
+  const event = calendarEvents.find(event => event.eventId === req.params.id);
+})
 
 // UPDATE event
 
