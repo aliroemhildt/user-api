@@ -1,13 +1,8 @@
-export default interface EventDate {
-  date: Date
-  time: Date //not sure if this will be a date or not
-}
-
 export default interface CalendarEvent {
   eventId: string
   userId:string
-  start: EventDate
-  end: EventDate
+  start: Date //date and time
+  end: Date //date and time
   name: string
   description: string
 }
