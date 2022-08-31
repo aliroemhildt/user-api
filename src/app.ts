@@ -14,13 +14,13 @@ const events: CalendarEvent[] = [];
 // GET all users
 // should I remove req if I'm not using it?
 //is this how I should type the return value?
-app.get('/api/users', (req: Request, res: Response): Response => { 
+app.get('/api/users', (_req: Request, res: Response): Response => { 
   return res.status(200).send(users);
-})
+});
 
 // GET single user
-app.get('/api/users/:id', (req: Request, res: Response): Response => { 
-  const user = users.find(user => user.id === req.params.id); //how do I type this
+app.get('/api/users/:id', (req: Request, res: Response): Response<User> => { 
+  const user: User | undefined = users.find(user => user.id === req.params.id); 
   
   if (!user) {
     return res.status(404).send(`No user found with id ${req.params.id}`);
@@ -55,27 +55,32 @@ app.post('/api/users', (req: Request, res: Response): Response => {
   // get keys of req.body
   // forEach over them to validate
   // could make an array of fields
-app.put('/api/users/:id', (req: Request, res: Response): Response => {
-  const user = users.find(user => user.id === req.params.id); //how do I type this?
+
+  // could try using joi to validate req body fields for put and post 
+app.put('/api/users/:id', (req: Request<User>, res: Response): Response => {
+  const user: User | undefined = users.find(user => user.id === req.params.id);
   
   if (!user) {
     return res.status(404).send(`No user found with ID ${req.params.id}`);
   }
+
+  enum UserFields {firstName = "firstName", lastName = "lastName", username = "username", password = "password"}
   
-  const reqFields = Object.keys(req.body);
-  const userFields = Object.keys(user); // error if this is before first if statement
+  const reqFields: string[] = Object.keys(req.body);
+  // const userFields = Object.keys(user); // error if this is before first if statement
   const checkField = (field: string) => field === "firstName" || field ==="lastName" || field === "username" || field ==="password";
   const includesField = reqFields.some(checkField);
 
-  if (user && !includesField) {
+  if (!includesField) {
     return res.status(400).send('Request must include at least one field: firstName, lastName, username, or password');
   }
 
-  // reqFields.forEach(field => {
-  //   if (userFields.includes(field)) {
-  //     user[field] = req.body[field];  //throwing error
-  //   }
-  // });
+  
+  reqFields.forEach(field => {
+    // if (Object.values(UserFields).includes(field)) {
+      user[field] = req.body[field];  //throwing error
+    // }
+  });
   
   if (user && req.body.firstName) {
     user.firstName = req.body.firstName;
@@ -94,7 +99,7 @@ app.put('/api/users/:id', (req: Request, res: Response): Response => {
 
 // DELETE user
 app.delete('/api/users/:id', (req: Request, res: Response): Response => {
-  const user = users.find(user => user.id === req.params.id); //how do I type this
+  const user: User | undefined = users.find(user => user.id === req.params.id);
  
   if (!user) {
     return res.status(404).send(`No user found with id ${req.params.id}`);
@@ -106,7 +111,7 @@ app.delete('/api/users/:id', (req: Request, res: Response): Response => {
 });
 
 // GET all calendar events
-app.get('/api/events', (req: Request, res: Response): Response => {
+app.get('/api/events', (_req: Request, res: Response): Response => {
   return res.status(200).send(events);
 });
 
