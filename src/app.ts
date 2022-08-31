@@ -54,36 +54,41 @@ app.post('/api/users', (req: Request, res: Response): Response => {
   // validate
   // get keys of req.body
   // forEach over them to validate
-  // could make an array of fields  
+  // could make an array of fields
 app.put('/api/users/:id', (req: Request, res: Response): Response => {
-  const user = users.find(user => user.id === req.params.id); //how do I type this? 
-
+  const user = users.find(user => user.id === req.params.id); //how do I type this?
+  
   if (!user) {
     return res.status(404).send(`No user found with ID ${req.params.id}`);
   }
-
-  if (user && req.body.firstName) {
-    user.firstName = req.body.firstName;
-  }
-
-  if (user && req.body.lastName) {
-    user.firstName = req.body.lastName;
-  }
-
-  if (user && req.body.username) {
-    user.username = req.body.username;
-  }
-
-  if (user && req.body.password) {
-    user.password = req.body.password;
-  }
-
-  const includesField = Object.keys(req.body).includes('firstName' || 'lastName' || 'username' || 'password');
+  
+  const reqFields = Object.keys(req.body);
+  const userFields = Object.keys(user); // error if this is before first if statement
+  const checkField = (field: string) => field === "firstName" || field ==="lastName" || field === "username" || field ==="password";
+  const includesField = reqFields.some(checkField);
 
   if (user && !includesField) {
     return res.status(400).send('Request must include at least one field: firstName, lastName, username, or password');
   }
 
+  // reqFields.forEach(field => {
+  //   if (userFields.includes(field)) {
+  //     user[field] = req.body[field];  //throwing error
+  //   }
+  // });
+  
+  if (user && req.body.firstName) {
+    user.firstName = req.body.firstName;
+  }
+  if (user && req.body.lastName) {
+    user.lastName = req.body.lastName;
+  }
+  if (user && req.body.username) {
+    user.username = req.body.username;
+  }
+  if (user && req.body.password) {
+    user.password = req.body.password;
+  }
   return res.status(200).send(user);
 })
 
@@ -161,7 +166,7 @@ app.delete('/api/events/:id', (req: Request, res: Response) => {
 })
 
 // UPDATE event
-// need to test this on postman
+// need to update to match user PUT 
 app.put(`api/events/:id`, (req: Request, res: Response) => {
   let event = events.find(event => event.eventId === req.params.id); //how do I type this
 
