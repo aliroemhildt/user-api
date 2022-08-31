@@ -16,7 +16,7 @@ const events: CalendarEvent[] = [];
 // GET all users
 // should I remove req if I'm not using it?
 app.get('/api/users', (req: Request, res: Response) => {
-  res.status(200).send(users);
+  return res.status(200).send(users);
 })
 
 // GET single user
@@ -24,16 +24,16 @@ app.get('/api/users/:id', (req: Request, res: Response) => {
   const user = users.find(user => user.id === req.params.id);
   
   if (!user) {
-    res.status(404).send(`No user found with id ${req.params.id}`);
+    return res.status(404).send(`No user found with id ${req.params.id}`);
   }
 
-  res.status(200).send(user);
+  return res.status(200).send(user);
 })
 
 // POST new user
 app.post('/api/users', (req: Request, res: Response) => {
   if (!req.body.firstName || !req.body.lastName || !req.body.username || !req.body.password) {
-    res.status(400).send('Missing a field');
+    return res.status(400).send('Missing a field');
   }
 
   const user: User = {
@@ -46,7 +46,7 @@ app.post('/api/users', (req: Request, res: Response) => {
   }
 
   users.push(user);
-  res.status(201).send(user);
+  return res.status(201).send(user);
 })
 
 // UPDATE existing user
@@ -60,7 +60,7 @@ app.put('/api/users/:id', (req: Request, res: Response) => {
   let user = users.find(user => user.id === req.params.id); //how do I type this? 
 
   if (!user) {
-    res.status(404).send(`No user found with ID ${req.params.id}`);
+    return res.status(404).send(`No user found with ID ${req.params.id}`);
   }
 
   if (user && req.body.firstName) {
@@ -82,10 +82,10 @@ app.put('/api/users/:id', (req: Request, res: Response) => {
   const includesField = Object.keys(req.body).includes('firstName' || 'lastName' || 'username' || 'password');
 
   if (user && !includesField) {
-    res.status(400).send('Missing a required field');
+    return res.status(400).send('Request must include at least one field: firstName, lastName, username, or password');
   }
 
-  res.status(200).send(user);
+  return res.status(200).send(user);
 })
 
 // DELETE user
@@ -93,13 +93,13 @@ app.delete('/api/users/:id', (req: Request, res: Response) => {
   const user = users.find(user => user.id === req.params.id);
  
   if (!user) {
-    res.status(404).send(`No user found with id ${req.params['id']}`);
+    return res.status(404).send(`No user found with id ${req.params['id']}`);
   } else {
     const index = users.indexOf(user);
     users.splice(index, 1);
-    res.status(200).send(user);
+    return res.status(200).send(user);
   } 
-})
+});
 
 // GET all calendar events
 app.get('/api/events', (req: Request, res: Response) => {
@@ -111,9 +111,9 @@ app.get('/api/events/:id', (req: Request, res: Response) => {
   const event = events.find(event => event.eventId === req.params.id);
   
   if (!event) {
-    res.status(404).send(`No event found with ID ${req.params.id}`);
+    return res.status(404).send(`No event found with ID ${req.params.id}`);
   } else {
-    res.status(200).send(event);
+    return res.status(200).send(event);
   }
 })
 
@@ -125,13 +125,13 @@ app.get('/api/events/user/:id', (req: Request, res: Response) => {
     }
   });
 
-  res.status(200).send(userEvents);
-})
+  return res.status(200).send(userEvents);
+});
 
 // POST new calendar event
 app.post('/api/events', (req: Request, res: Response) => {
   if (!req.body.userId || !req.body.start || !req.body.end || !req.body.name || !req.body.description) {
-    res.status(400).send('Missing a required field');
+    return res.status(400).send('Missing a required field');
   }
 
   const newEvent: CalendarEvent = {
@@ -144,7 +144,7 @@ app.post('/api/events', (req: Request, res: Response) => {
   }
 
   events.push(newEvent);
-  res.status(201).send(newEvent);
+  return res.status(201).send(newEvent);
 })
 
 // DELETE calendar event
@@ -152,11 +152,11 @@ app.delete('/api/events/:id', (req: Request, res: Response) => {
   const event = events.find(event => event.eventId === req.params.id);
 
   if (!event) {
-    res.status(404).send(`No calendar event found with id ${req.params.id}`);
+    return res.status(404).send(`No calendar event found with id ${req.params.id}`);
   } else {
     const index = events.indexOf(event);
     events.splice(index, 1);
-    res.status(200).send(event);
+    return res.status(200).send(event);
   }
 })
 
@@ -166,7 +166,7 @@ app.put(`api/events/:id`, (req: Request, res: Response) => {
   let event = events.find(event => event.eventId === req.params.id);
 
   if (!event) {
-    res.status(404).send(`No event found with ID ${req.params.id}`);
+    return res.status(404).send(`No event found with ID ${req.params.id}`);
   }
 
   if (event && req.body.start) {
@@ -188,10 +188,10 @@ app.put(`api/events/:id`, (req: Request, res: Response) => {
   const includesField = Object.keys(req.body).includes('start' || 'end' || 'name' || 'description');
 
   if (event && !includesField) {
-    res.status(400).send('Missing a required field');
+    return res.status(400).send('Missing a required field');
   }
 
-  res.status(200).send(event);
+  return res.status(200).send(event);
 });
 
 app.listen(port, () => console.log(`Server started at http://localhost:${port}`));
