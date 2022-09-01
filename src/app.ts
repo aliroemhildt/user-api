@@ -58,42 +58,59 @@ app.post('/api/users', (req: Request, res: Response): Response => {
 
   // could try using joi to validate req body fields for put and post 
 app.put('/api/users/:id', (req: Request<User>, res: Response): Response => {
+  // find user
   const user: User | undefined = users.find(user => user.id === req.params.id);
   
+  // if no user is found return 404
   if (!user) {
     return res.status(404).send(`No user found with ID ${req.params.id}`);
   }
 
-  enum UserFields {firstName = "firstName", lastName = "lastName", username = "username", password = "password"}
-  
-  const reqFields: string[] = Object.keys(req.body);
-  // const userFields = Object.keys(user); // error if this is before first if statement
-  const checkField = (field: string) => field === "firstName" || field ==="lastName" || field === "username" || field ==="password";
-  const includesField = reqFields.some(checkField);
+  // declare accepted fields 
+  enum UserFields {
+    firstName = "firstName",
+    lastName = "lastName",
+    username = "username",
+    password = "password"
+  }
 
-  if (!includesField) {
+  // get obj keys from enum
+  const userKeys: string[] = Object.keys(UserFields);
+  // get obj keys from request body
+  const reqKeys: string[] = Object.keys(req.body);
+
+  // helper fn to check if a field is in UserFields
+  // const checkField = (field: string) => {
+  //   return userKeys.includes(field);
+  // }
+
+  // pass all req body fields through checkFields, result will be false if any are not in UserFields
+  const acceptedFields = reqKeys.some((field: string) => userKeys.includes(field));
+
+  // if request body has fields that are not in UserFields, return 400
+  if (!acceptedFields) {
     return res.status(400).send('Request must include at least one field: firstName, lastName, username, or password');
   }
 
-  
-  reqFields.forEach(field => {
-    // if (Object.values(UserFields).includes(field)) {
-      user[field] = req.body[field];  //throwing error
-    // }
+  // if fields are accepted, update the user 
+  reqKeys.forEach((field: UserFields) => {
+      user[key] = req.body[key];
   });
   
-  if (user && req.body.firstName) {
-    user.firstName = req.body.firstName;
-  }
-  if (user && req.body.lastName) {
-    user.lastName = req.body.lastName;
-  }
-  if (user && req.body.username) {
-    user.username = req.body.username;
-  }
-  if (user && req.body.password) {
-    user.password = req.body.password;
-  }
+  // if (user && req.body.firstName) {
+  //   user.firstName = req.body.firstName;
+  // }
+  // if (user && req.body.lastName) {
+  //   user.lastName = req.body.lastName;
+  // }
+  // if (user && req.body.username) {
+  //   user.username = req.body.username;
+  // }
+  // if (user && req.body.password) {
+  //   user.password = req.body.password;
+  // }
+
+  // return updated user
   return res.status(200).send(user);
 })
 
