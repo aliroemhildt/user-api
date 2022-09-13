@@ -4,7 +4,7 @@ interface User {
   lastName: string;
   username: string;
   password: string;
-  dateCreated: Date;
+  // dateCreated: Date;
 }
 
 export default User;

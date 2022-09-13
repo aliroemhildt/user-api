@@ -1,8 +1,8 @@
 export default interface CalendarEvent {
   eventId: string
   userId:string
-  start: Date //date and time
-  end: Date //date and time
+  start: Date
+  end: Date
   name: string
   description: string
 }

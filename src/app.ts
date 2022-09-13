@@ -8,8 +8,27 @@ const port: number | string = process.env.PORT || 3000; //how can I type this as
 
 app.use(express.json());
 
-const users: User[] = []
-const events: CalendarEvent[] = []; 
+const users: User[] = [
+  {
+    id: '1',
+    firstName: 'Ali',
+    lastName: 'Roemhildt',
+    username: 'alir',
+    password: 'password',
+    // dateCreated: new Date
+  },
+  {
+    id: '2',
+    firstName: 'Harry',
+    lastName: 'Styles',
+    username: 'hs',
+    password: 'harryshouse',
+    // dateCreated: new Date
+  }
+]
+const events: CalendarEvent[] = [
+
+]; 
 
 // GET all users
 app.get('/api/users', (_req: Request, res: Response<User[]>) => { 
@@ -39,7 +58,7 @@ app.post('/api/users', (req: Request<User>, res: Response<User | string>) => {
     lastName: req.body.lastName,
     username: req.body.username,
     password: req.body.password,
-    dateCreated: new Date()
+    // dateCreated: new Date()
   }
 
   users.push(user);
